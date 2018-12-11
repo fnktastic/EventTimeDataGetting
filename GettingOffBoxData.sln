@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28306.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GettingOffBoxData", "GettingOffBoxData\GettingOffBoxData.csproj", "{C3133CE7-FAE6-4709-9431-79196450A1AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendingOffBoxData", "SendingOffBoxData\SendingOffBoxData.csproj", "{518A8F2C-E682-4102-8EF2-5045256D142F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C3133CE7-FAE6-4709-9431-79196450A1AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3133CE7-FAE6-4709-9431-79196450A1AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3133CE7-FAE6-4709-9431-79196450A1AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3133CE7-FAE6-4709-9431-79196450A1AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{518A8F2C-E682-4102-8EF2-5045256D142F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{518A8F2C-E682-4102-8EF2-5045256D142F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{518A8F2C-E682-4102-8EF2-5045256D142F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{518A8F2C-E682-4102-8EF2-5045256D142F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F9679726-0A6D-4AC1-869B-BE5A0E1D4971}
+	EndGlobalSection
+EndGlobal
