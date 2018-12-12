@@ -30,7 +30,7 @@ namespace GettingOffBoxData.Client
         public void PrintAllReadings()
         {
             foreach(var read in _readRepository.Reads)
-                Console.WriteLine("{0} {1} {2} {3} {4} {5} {6}", read.ID, read.UniqueID, read.TagID, read.TimeStamp, read.ReaderNo, read.AntennaID, read.IPAddress);            
+                Console.WriteLine(read.ToString());            
         }
     }
 }

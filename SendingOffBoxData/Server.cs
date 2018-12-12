@@ -14,6 +14,7 @@ namespace SendingOffBoxData
     internal sealed class Server : Disposable
     {
         private List<TcpClient> _clients = new List<TcpClient>();
+        private Dictionary<string, List<string>> _lostClients = new Dictionary<string, List<string>>();
         private TcpListener _listener;
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly AsyncCallback _onAsyncReadComplete;
@@ -160,6 +161,7 @@ namespace SendingOffBoxData
                 {
                     if (this._clients.Contains(asyncState.Client))
                     {
+                        _lostClients.Add(asyncState.Client.GetIP(), new List<string>());
                         this._clients.Remove(asyncState.Client);
                     }
                 }
@@ -168,13 +170,34 @@ namespace SendingOffBoxData
 
         public void OnTagRead(Read read)
         {
+
             if (this._clients.Count >= 1)
             {
+                if(_lostClients != null)
+                {
+                    foreach (var lostClient in _lostClients)
+                    {
+                        if(_clients.Any(x => x.GetIP() == lostClient.Key))
+                        {
+                            var readingsToSend = lostClient.Value;
+                            foreach(var readingToSend in readingsToSend)
+                            {
+                                this.SendAll(Encoding.ASCII.GetBytes(readingToSend.ToString()));
+                            }
+                        }
+                    }
+                }
 
-                this.SendAll(Encoding.ASCII.GetBytes(string.Format("{0}#{1}#{2}#{3}#{4}#{5}#{6}", read.ID, read.UniqueID, read.TagID, read.TimeStamp, read.ReaderNo, read.AntennaID, read.IPAddress)));
-                Console.WriteLine("{0} {1} {2} {3} {4} {5} {6}", read.ID, read.UniqueID, read.TagID, read.TimeStamp, read.ReaderNo, read.AntennaID, read.IPAddress);
+                _lostClients = new Dictionary<string, List<string>>();
+                this.SendAll(Encoding.ASCII.GetBytes(read.ToString()));
+                Console.WriteLine(read.ToString());
             }
-        }
+
+            if(_lostClients != null && _lostClients.Count > 0)
+            {
+                _lostClients.FirstOrDefault().Value.Add(read.ToString());
+            }
+        }      
 
         private void SendAll(byte[] data)
         {

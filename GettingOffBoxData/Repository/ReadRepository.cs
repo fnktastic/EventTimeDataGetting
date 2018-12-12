@@ -19,10 +19,10 @@ namespace GettingOffBoxData.Repository
 
         public IEnumerable<Read> Reads => _context.Reads;
 
-        public void SaveRead(Read read)
+        public async void SaveRead(Read read)
         {
             _context.Reads.Add(read);
-            _context.SaveChangesAsync();
+           await _context.SaveChangesAsync();
         }
     }
 }

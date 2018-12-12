@@ -3,10 +3,12 @@ using GettingOffBoxData.Repository;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GettingOffBoxData.Client
@@ -18,25 +20,47 @@ namespace GettingOffBoxData.Client
 
         private readonly string _host;
         private readonly int _port;
+        private readonly List<string> _readLines;
 
         public ReadsListener(string host, int port, IReadRepository readRepository)
         {
+            _readRepository = readRepository;
+            _readLines = new List<string>();
             _host = host;
             _port = port;
-            _tcpClient = new TcpClient(_host, _port);
-            _readRepository = readRepository;
+            try
+            {
+                _tcpClient = new TcpClient(_host, _port);
+            }
+            catch (SocketException)
+            {
+                Console.WriteLine("Unable to connect to server");
+                return;
+            }
+
             StartReading();
+
+        }
+
+        private void CheckStringForReadings(string stringToCheck)
+        {
+            var readings = stringToCheck.Split('@');
+            foreach (var reading in readings)
+                SaveRead(MappRead(reading));
 
         }
 
         private Read MappRead(string stringToMap)
         {
+
+
             var array = stringToMap.Split('#');
             if (array.Length == 7)
             {
+                Console.WriteLine(stringToMap);
                 return new Read()
                 {
-                    ID = int.Parse(array[0]),
+                    ID = 0,
                     UniqueID = Guid.Parse(array[1]),
                     TagID = array[2],
                     TimeStamp = array[3],
@@ -51,70 +75,26 @@ namespace GettingOffBoxData.Client
 
         private void SaveRead(Read read)
         {
-            _readRepository.SaveRead(read);
+            if (read != null)
+                _readRepository.SaveRead(read);
         }
 
         private void StartReading()
         {
-            int requestCount = 0;
-            byte[] bytesFrom = new byte[10025];
-            string readFromServer = null;
+            byte[] data = new byte[10000];
+            string stringData;
+            int recvieveLength;
+
+            NetworkStream ns = _tcpClient.GetStream();
 
             while (true)
             {
-                try
-                {
-                    requestCount++;
-
-                    NetworkStream stream = _tcpClient.GetStream();
-                    stream.ReadTimeout = 4000;
-
-                    int bufferSize = (int)_tcpClient.ReceiveBufferSize;
-                    if (bufferSize > bytesFrom.Length)
-                    {
-                        bufferSize = bytesFrom.Length;
-                    }
-
-                    try
-                    {
-                        int bytesRead = stream.Read(bytesFrom, 0, bufferSize);
-                        stream.Flush();
-
-                        if (bytesRead == 0)
-                        {
-                            throw new System.IO.IOException("Connection seems to be refused or closed.");
-                        }
-                    }
-                    catch (System.IO.IOException)
-                    {
-                        byte[] ping = System.Text.Encoding.UTF8.GetBytes("%");
-                        stream.WriteTimeout = 1;
-
-                        stream.Write(ping, 0, ping.Length);
-                        continue;
-                    }
-                    readFromServer = System.Text.Encoding.ASCII.GetString(bytesFrom);
-                    readFromServer = readFromServer.Replace("\0", "");
-                    Console.WriteLine(readFromServer);
-
-                    var read = MappRead(readFromServer);
-                    if(read != null)
-                        SaveRead(read);
-                }
-                catch (Exception ex) when (ex is ObjectDisposedException || ex is InvalidOperationException || ex is System.IO.IOException)
-                {
-                    Debug.WriteLine(ex.ToString());
-                    break;
-                }
-                catch (ArgumentOutOfRangeException ex)
-                {
-                    Debug.WriteLine(ex.ToString());
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex.ToString());
-                    break;
-                }
+                ns.Flush();
+                data = new byte[10000];
+                recvieveLength = ns.Read(data, 0, data.Length);
+                stringData = Encoding.ASCII.GetString(data, 0, recvieveLength);
+                _readLines.Add(stringData);
+                CheckStringForReadings(stringData);
             }
         }
     }

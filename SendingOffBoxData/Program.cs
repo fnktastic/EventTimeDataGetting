@@ -22,10 +22,12 @@ namespace SendingOffBoxData
                 UniqueID = Guid.NewGuid(),
             };
 
+            Thread.Sleep(5000);
+            Console.WriteLine("LET'S GO!");
 
             while (true)
             {
-                Thread.Sleep(2000);
+                Thread.Sleep(250);
                 read.TimeStamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
                 read.ID++;
                 read.UniqueID = Guid.NewGuid();
