@@ -159,7 +159,7 @@ namespace SendingOffBoxData
             {
                 lock (this._clients)
                 {
-                    if (this._clients.Contains(asyncState.Client))
+                    if (this._clients.Contains(asyncState.Client) && _lostClients.Keys.Contains(asyncState.Client.GetIP()) == false)
                     {
                         _lostClients.Add(asyncState.Client.GetIP(), new List<string>());
                         this._clients.Remove(asyncState.Client);
@@ -186,9 +186,10 @@ namespace SendingOffBoxData
                             }
                         }
                     }
+
+                    _lostClients = new Dictionary<string, List<string>>();
                 }
 
-                _lostClients = new Dictionary<string, List<string>>();
                 this.SendAll(Encoding.ASCII.GetBytes(read.ToString()));
                 Console.WriteLine(read.ToString());
             }

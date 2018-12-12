@@ -52,21 +52,20 @@ namespace GettingOffBoxData.Client
 
         private Read MappRead(string stringToMap)
         {
-
-
             var array = stringToMap.Split('#');
-            if (array.Length == 7)
+            if (array.Length == 8)
             {
                 Console.WriteLine(stringToMap);
                 return new Read()
                 {
                     ID = 0,
-                    UniqueID = Guid.Parse(array[1]),
-                    TagID = array[2],
-                    TimeStamp = array[3],
-                    ReaderNo = array[4],
-                    AntennaID = array[5],
-                    IPAddress = array[6],
+                    EPC = array[1],
+                    Time = array[2],
+                    PeakRssiInDbm = array[3],
+                    AntennaNumber = array[4],
+                    ReaderNumber = array[5],
+                    IpAddress = array[6],
+                    UniqueReadingID = array[7]
                 };
             }
 

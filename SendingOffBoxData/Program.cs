@@ -15,22 +15,23 @@ namespace SendingOffBoxData
             Read read = new Read()
             {
                 ID = 1,
-                AntennaID = "2",
-                IPAddress = "127.0.0.1",
-                ReaderNo = "1",
-                TagID = "TAG_12",
-                UniqueID = Guid.NewGuid(),
+                AntennaNumber = "2",
+                IpAddress = "127.0.0.1",
+                ReaderNumber = "1",
+                EPC = "TAG_12",
+                UniqueReadingID = Guid.NewGuid().ToString(),
+                PeakRssiInDbm = "-11dBm",
             };
 
-            Thread.Sleep(5000);
+            Console.ReadKey();
             Console.WriteLine("LET'S GO!");
 
             while (true)
             {
-                Thread.Sleep(250);
-                read.TimeStamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
+                Thread.Sleep(1000);
+                read.Time = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
                 read.ID++;
-                read.UniqueID = Guid.NewGuid();
+                read.UniqueReadingID = Guid.NewGuid().ToString();
                 InitServer.OnTagRead(read);
             }
         }
