@@ -171,7 +171,8 @@ namespace SendingOffBoxData
             if (this._clients.Count >= 1)
             {
 
-                this.SendAll(Encoding.ASCII.GetBytes(string.Format("{0}#{1}#{2}#{3}#{4}#{5}#{6}", read.ID, read.UniqueID, read.TagID, read.TimeStamp, read.ReaderNo, read.AntennaID, read.IPAdress)));
+                this.SendAll(Encoding.ASCII.GetBytes(string.Format("{0}#{1}#{2}#{3}#{4}#{5}#{6}", read.ID, read.UniqueID, read.TagID, read.TimeStamp, read.ReaderNo, read.AntennaID, read.IPAddress)));
+                Console.WriteLine("{0} {1} {2} {3} {4} {5} {6}", read.ID, read.UniqueID, read.TagID, read.TimeStamp, read.ReaderNo, read.AntennaID, read.IPAddress);
             }
         }
 

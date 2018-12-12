@@ -39,10 +39,10 @@ namespace GettingOffBoxData.Client
                     ID = int.Parse(array[0]),
                     UniqueID = Guid.Parse(array[1]),
                     TagID = array[2],
-                    TimeStamp = array[3], //DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(array[3])).UtcDateTime,
+                    TimeStamp = array[3],
                     ReaderNo = array[4],
                     AntennaID = array[5],
-                    IPAdress = array[6],
+                    IPAddress = array[6],
                 };
             }
 
