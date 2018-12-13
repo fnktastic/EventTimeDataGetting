@@ -16,12 +16,14 @@ namespace SendingOffBoxData
         private List<TcpClient> _clients = new List<TcpClient>();
         private Dictionary<string, List<string>> _lostClients = new Dictionary<string, List<string>>();
         private TcpListener _listener;
+        private const string ALL_CLIENTS = "unknown";
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly AsyncCallback _onAsyncReadComplete;
 
         public Server()
         {
             this._onAsyncReadComplete = new AsyncCallback(this.OnAsyncReadComplete);
+            _lostClients.Add(ALL_CLIENTS, new List<string>());
         }
 
         protected override void Dispose(bool bDisposing)
@@ -170,35 +172,45 @@ namespace SendingOffBoxData
 
         public void OnTagRead(Read read)
         {
+            if (_clients.Count == 0)
+                foreach (var lostClient in _lostClients)
+                    lostClient.Value.Add(read.ToString());
 
             if (this._clients.Count >= 1)
             {
-                if(_lostClients != null)
+                if (_lostClients.Count > 0)
                 {
                     foreach (var lostClient in _lostClients)
                     {
-                        if(_clients.Any(x => x.GetIP() == lostClient.Key))
+                        if(lostClient.Key == ALL_CLIENTS)
                         {
-                            var readingsToSend = lostClient.Value;
-                            foreach(var readingToSend in readingsToSend)
+                            lostClient.Value.ForEach(x =>
                             {
-                                this.SendAll(Encoding.ASCII.GetBytes(readingToSend.ToString()));
-                            }
+                                SendAll(Encoding.ASCII.GetBytes(x));
+                            });
                         }
+
+                        else if (_clients.FirstOrDefault(x => x.GetIP() == lostClient.Key) != null)
+                        {
+                            var client = _clients.FirstOrDefault(x => x.GetIP() == lostClient.Key);
+                            // send to one client
+                            lostClient.Value.ForEach(x =>
+                            {
+                                SendAll(Encoding.ASCII.GetBytes(x));
+                            });
+                        }
+
+
                     }
 
-                    _lostClients = new Dictionary<string, List<string>>();
+                    _lostClients.Clear();
                 }
 
-                this.SendAll(Encoding.ASCII.GetBytes(read.ToString()));
+                SendAll(Encoding.ASCII.GetBytes(read.ToString()));
                 Console.WriteLine(read.ToString());
             }
 
-            if(_lostClients != null && _lostClients.Count > 0)
-            {
-                _lostClients.FirstOrDefault().Value.Add(read.ToString());
-            }
-        }      
+        }
 
         private void SendAll(byte[] data)
         {
